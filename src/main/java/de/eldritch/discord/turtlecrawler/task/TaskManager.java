@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.util.HashSet;
-import java.util.concurrent.*;
 import java.util.logging.Level;
 
 /**
@@ -37,9 +36,14 @@ public class TaskManager {
     private final HashSet<Task> tasks = new HashSet<>();
 
     /**
+     * The total amount of processed messages by this TaskManager.
+     */
+    private long totalProcessedMessages = 0L;
+
+    /**
      * ExecutorService responsible for submissions by tasks.
      */
-    private final ExecutorService executor;
+    private final TaskExecutor executor;
 
     /**
      * Default constructor. This can only be called once as the program is not optimized for multiple TaskManagers.
@@ -98,5 +102,21 @@ public class TaskManager {
      */
     NestedToggleLogger getLogger() {
         return logger;
+    }
+
+    /**
+     * Provides the approximate amount of tasks that are currently managed by the Executor.
+     * @return Number of scheduled tasks that have not finished execution.
+     */
+    public long getTaskAmount() {
+        return executor.getTaskCount() - executor.getCompletedTaskCount();
+    }
+
+    public synchronized long updateMessages(long l) {
+        return totalProcessedMessages += l;
+    }
+
+    public long getTotalProcessedMessages() {
+        return updateMessages(0);
     }
 }

@@ -51,6 +51,8 @@ public class HistoryTask extends Task {
             }
         }
 
+        manager.updateMessages(data.size());
+
         this.done = true;
     }
 

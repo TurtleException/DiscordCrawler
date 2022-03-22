@@ -8,12 +8,16 @@ import java.io.File;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 public class DistributionManager {
     private final NestedToggleLogger logger;
     private final DiscordTurtleCrawler main;
+
+    private HashSet<TaskManager> taskManagers = new HashSet<>();
 
     public static final File OUTPUT_DIR = new File(DiscordTurtleCrawler.DIR, "out");
     static {
@@ -48,11 +52,17 @@ public class DistributionManager {
         while (increments.contains(increment))
             increment++;
 
-        return new TaskManager(name + "-" + increment);
+        TaskManager manager =  new TaskManager(name + "-" + increment);
+        taskManagers.add(manager);
+        return manager;
     }
 
     private List<File> getOutputDirs() {
         File[] arr = OUTPUT_DIR.listFiles((dir, name) -> Pattern.matches("", name));
         return arr != null ? Arrays.stream(arr).filter(File::isDirectory).toList() : List.of();
+    }
+
+    public Set<TaskManager> getTaskManagers() {
+        return Set.copyOf(taskManagers);
     }
 }

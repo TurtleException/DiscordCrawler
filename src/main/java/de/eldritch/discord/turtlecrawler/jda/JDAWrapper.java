@@ -6,25 +6,40 @@ import de.eldritch.discord.turtlecrawler.util.logging.NestedToggleLogger;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
+import net.dv8tion.jda.api.managers.Presence;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 
 import javax.security.auth.login.LoginException;
 import java.util.logging.Level;
 
 public class JDAWrapper {
-    private static final NestedToggleLogger LOGGER = new NestedToggleLogger("JDA", DiscordTurtleCrawler.LOGGER);
+    static final NestedToggleLogger LOGGER = new NestedToggleLogger("JDA", DiscordTurtleCrawler.LOGGER);
     /**
      * Singleton object to ensure instance uniqueness.
      */
     private static JDAWrapper singleton;
 
+    /**
+     * Constantly updates the {@link Presence} of the bot.
+     */
+    private PresenceController presenceController;
+
+    /**
+     * Discord API authorization token
+     */
     private final String token;
+    /**
+     * JDA instance.
+     * @see JDAWrapper#init()
+     */
     private JDA jda;
 
     public JDAWrapper() throws LoginException {
         this.token = Config.DISCORD_TOKEN.get();
         this.checkSingleton();
         this.init();
+
+        presenceController = new PresenceController(this);
 
         // only declare singleton when new instance is successfully initialized
         singleton = this;
@@ -41,6 +56,10 @@ public class JDAWrapper {
         }
     }
 
+    /**
+     * Builds the {@link JDA} instance.
+     * @throws LoginException
+     */
     private void init() throws LoginException {
         LOGGER.log(Level.INFO, "Initializing...");
         JDABuilder builder = JDABuilder.createDefault(token);
@@ -54,6 +73,9 @@ public class JDAWrapper {
         LOGGER.log(Level.INFO, "OK!");
     }
 
+    /**
+     * Attempts to shut down the {@link JDA} instance.
+     */
     public void shutdown() {
         LOGGER.log(Level.WARNING, "Received shutdown command!");
 
@@ -71,6 +93,11 @@ public class JDAWrapper {
         jda = null;
     }
 
+    /**
+     * Provides the wrapped {@link JDA} instance. While this method is technically nullable the JDA is built when
+     * constructing this wrapper. If building the JDA fails an exception is thrown.
+     * @return JDA instance.
+     */
     public JDA getJDA() {
         return jda;
     }
