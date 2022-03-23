@@ -3,10 +3,11 @@ package de.eldritch.discord.turtlecrawler.task.tasks;
 import de.eldritch.discord.turtlecrawler.task.Task;
 import de.eldritch.discord.turtlecrawler.task.TaskManager;
 import de.eldritch.discord.turtlecrawler.util.RestActionUtil;
-import net.dv8tion.jda.api.entities.BaseGuildMessageChannel;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
+import net.dv8tion.jda.internal.entities.EntityBuilder;
 import net.dv8tion.jda.internal.requests.Route;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Range;
@@ -27,7 +28,7 @@ public class HistoryTask extends Task {
 
     public HistoryTask(@NotNull TaskManager manager, @NotNull MessageChannel channel, @NotNull String message, @Range(from = 1, to = 100) int limit) {
         super(manager, "HISTORY/"
-                + ((channel instanceof BaseGuildMessageChannel guildChannel) ? guildChannel.getGuild().getId() + "/" : "") + channel.getId() + "/"
+                + ChannelTask.provideName(channel) + "/M"
                 + message + ">" + limit);
 
         this.channel = channel;
@@ -54,6 +55,27 @@ public class HistoryTask extends Task {
         manager.updateMessages(data.size());
 
         this.done = true;
+
+
+        /* ----- PROCESS ATTACHMENTS ----- */
+        logger.log(Level.FINE, "Iterating messages to find attachments...");
+
+        EntityBuilder builder = new EntityBuilder(channel.getJDA());
+        for (int i = 0; i < array.length(); i++) {
+            logger.log(Level.FINER, "Checking message " + i + " of " + array.length() + ".");
+
+            DataArray attachments = array.getObject(i).getArray("attachments");
+
+            for (int j = 0; j < attachments.length(); j++) {
+                Message.Attachment attachment = builder.createMessageAttachment(attachments.getObject(j));
+
+                manager.register(new AttachmentTask(manager, channel, attachment));
+            }
+
+            logger.log(Level.FINER, "Processed " + attachments.length() + " attachments.");
+        }
+
+        logger.log(Level.FINE, "Checked " + array.length() + " messages for attachments.");
     }
 
     public List<DataObject> getData() {
