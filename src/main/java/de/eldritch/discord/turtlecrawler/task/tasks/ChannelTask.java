@@ -25,7 +25,7 @@ public class ChannelTask extends Task {
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public ChannelTask(@NotNull TaskManager manager, @NotNull MessageChannel channel) throws IOException {
-        super(manager, "CHANNEL/" + ((channel instanceof TextChannel guildChannel) ? guildChannel.getGuild().getId() + "/" : "") + channel.getId());
+        super(manager, "CHANNEL/" + ((channel instanceof BaseGuildMessageChannel guildChannel) ? guildChannel.getGuild().getId() + "/" : "") + channel.getId());
         this.channel = channel;
 
 

@@ -9,7 +9,6 @@ import de.eldritch.discord.turtlecrawler.ui.input.CommandHelper;
 import net.dv8tion.jda.api.entities.BaseGuildMessageChannel;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.PrivateChannel;
-import net.dv8tion.jda.api.entities.TextChannel;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -62,7 +61,7 @@ public class CommandCrawl implements Command {
     }
 
     /**
-     * Creates a {@link ChannelTask} with a designated {@link TextChannel} (guild) via {@link TaskBuilder}.
+     * Creates a {@link ChannelTask} with a designated {@link BaseGuildMessageChannel} (guild) via {@link TaskBuilder}.
      * @param args Command arguments
      */
     private void crawlChannel(String[] args) {

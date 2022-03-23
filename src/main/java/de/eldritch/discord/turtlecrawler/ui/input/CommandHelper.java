@@ -5,7 +5,6 @@ import de.eldritch.discord.turtlecrawler.task.Task;
 import net.dv8tion.jda.api.entities.BaseGuildMessageChannel;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.PrivateChannel;
-import net.dv8tion.jda.api.entities.TextChannel;
 
 /**
  * Provides helper methods for {@link Task} building.
@@ -31,7 +30,7 @@ public class CommandHelper {
     }
 
     /**
-     * Provides a {@link TextChannel} object from a {@link Guild} and a snowflake ID.
+     * Provides a {@link BaseGuildMessageChannel} object from a {@link Guild} and a snowflake ID.
      * @param guild
      * @param snowflake ID of the channel.
      * @return
@@ -45,7 +44,7 @@ public class CommandHelper {
         BaseGuildMessageChannel channel = guild.getChannelById(BaseGuildMessageChannel.class, snowflake);
 
         if (channel == null)
-            throw new NullPointerException("Could not find TextChannel matching snowflake '" + snowflake + "' on guild " + guild.getId() + ".");
+            throw new NullPointerException("Could not find BaseGuildMessageChannel matching snowflake '" + snowflake + "' on guild " + guild.getId() + ".");
 
         return channel;
     }

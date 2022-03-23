@@ -3,8 +3,8 @@ package de.eldritch.discord.turtlecrawler.task.tasks;
 import de.eldritch.discord.turtlecrawler.task.Task;
 import de.eldritch.discord.turtlecrawler.task.TaskManager;
 import de.eldritch.discord.turtlecrawler.util.RestActionUtil;
+import net.dv8tion.jda.api.entities.BaseGuildMessageChannel;
 import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.Route;
@@ -27,7 +27,7 @@ public class HistoryTask extends Task {
 
     public HistoryTask(@NotNull TaskManager manager, @NotNull MessageChannel channel, @NotNull String message, @Range(from = 1, to = 100) int limit) {
         super(manager, "HISTORY/"
-                + ((channel instanceof TextChannel guildChannel) ? guildChannel.getGuild().getId() + "/" : "") + channel.getId() + "/"
+                + ((channel instanceof BaseGuildMessageChannel guildChannel) ? guildChannel.getGuild().getId() + "/" : "") + channel.getId() + "/"
                 + message + ">" + limit);
 
         this.channel = channel;
