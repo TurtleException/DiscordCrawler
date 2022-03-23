@@ -18,7 +18,7 @@ import java.util.logging.StreamHandler;
 public class NestedToggleLogger extends Logger {
     private boolean active = true;
 
-    private final Queue<LogRecord> queue = new Queue<>(Config.LOGGER_QUEUE_CAPACITY.get());
+    private final Queue<LogRecord> queue = new Queue<>(100);
 
     public NestedToggleLogger(@NotNull String name, @NotNull Logger parent) {
         super(name, null);

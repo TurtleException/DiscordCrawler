@@ -46,7 +46,7 @@ public class DiscordTurtleCrawler {
         status.set(Status.INIT);
 
         jdaWrapper = new JDAWrapper();
-        manager = new DistributionManager();
+        manager = new DistributionManager(this);
         receiver = new Receiver();
 
         /* ----- RUNNING ----- */

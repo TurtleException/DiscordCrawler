@@ -10,7 +10,7 @@ import java.util.logging.StreamHandler;
 public final class SystemOutputToggleLogger extends Logger {
     private boolean active = true;
 
-    private final Queue<LogRecord> queue = new Queue<>(Config.LOGGER_QUEUE_CAPACITY.get());
+    private final Queue<LogRecord> queue = new Queue<>(100);
 
     private final StreamHandler systemOutHandler;
 

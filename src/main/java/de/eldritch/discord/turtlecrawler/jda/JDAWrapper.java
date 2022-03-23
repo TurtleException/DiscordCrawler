@@ -2,6 +2,7 @@ package de.eldritch.discord.turtlecrawler.jda;
 
 import de.eldritch.discord.turtlecrawler.Config;
 import de.eldritch.discord.turtlecrawler.DiscordTurtleCrawler;
+import de.eldritch.discord.turtlecrawler.Main;
 import de.eldritch.discord.turtlecrawler.util.logging.NestedToggleLogger;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -10,6 +11,8 @@ import net.dv8tion.jda.api.managers.Presence;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 
 import javax.security.auth.login.LoginException;
+import java.io.*;
+import java.util.Properties;
 import java.util.logging.Level;
 
 public class JDAWrapper {
@@ -34,8 +37,8 @@ public class JDAWrapper {
      */
     private JDA jda;
 
-    public JDAWrapper() throws LoginException {
-        this.token = Config.DISCORD_TOKEN.get();
+    public JDAWrapper() throws LoginException, IOException {
+        this.token = getDiscordToken();
         this.checkSingleton();
         this.init();
 
@@ -100,5 +103,19 @@ public class JDAWrapper {
      */
     public JDA getJDA() {
         return jda;
+    }
+
+    private static String getDiscordToken() throws IOException {
+        Properties properties = new Properties();
+
+        File file = new File(DiscordTurtleCrawler.DIR, "token.properties");
+        if (file.createNewFile()) {
+            properties.setProperty("apiToken", "PLEASE PUT YOUR TOKEN HERE");
+            properties.store(new FileWriter(file), null);
+            return null;
+        }
+
+        properties.load(new FileReader(file));
+        return properties.getProperty("apiToken", null);
     }
 }

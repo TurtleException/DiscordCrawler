@@ -1,7 +1,6 @@
 package de.eldritch.discord.turtlecrawler.ui.input;
 
 import de.eldritch.discord.turtlecrawler.DiscordTurtleCrawler;
-import de.eldritch.discord.turtlecrawler.ui.input.commands.CommandConfig;
 import de.eldritch.discord.turtlecrawler.ui.input.commands.CommandCrawl;
 import de.eldritch.discord.turtlecrawler.ui.input.commands.CommandLevel;
 
@@ -21,7 +20,6 @@ public class Commands {
 
     // class initializer to have commands available statically
     static {
-        commands.put("config", new CommandConfig());
         commands.put("crawl" , new CommandCrawl());
         commands.put("level" , new CommandLevel());
     }
