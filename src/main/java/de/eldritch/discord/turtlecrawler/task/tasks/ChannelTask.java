@@ -16,10 +16,19 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 
+/**
+ * A Task that progressively retrieves the history of a {@link MessageChannel} and saves messages to a file.
+ */
 public class ChannelTask extends Task {
     private final MessageChannel channel;
 
+    /**
+     * File with the metadata of the channel.
+     */
     private final File fileMetadata;
+    /**
+     * File with the message history of the channel.
+     */
     private final File fileMessages;
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -40,8 +49,7 @@ public class ChannelTask extends Task {
 
     @Override
     public void run() {
-        // incremented with every message that is being processed
-        int amount = 0;
+        /* ----- METADATA ----- */
 
         logger.log(Level.FINE, "Processing metadata.");
 
@@ -59,13 +67,16 @@ public class ChannelTask extends Task {
         }
 
 
-        /* ----- ----- ----- */
+        /* ----- MESSAGES ----- */
 
+        // incremented with every message that is being processed
+        int amount = 0;
 
         HistoryTask historyTask = null;
         String messageId = "0";
 
-        LinkedList<String> lines = new LinkedList<>();
+        // buffers new lines as new history tasks are being executed
+        LinkedList<String> lineBuffer = new LinkedList<>();
 
         while (historyTask == null || !historyTask.isShortened()) {
             logger.log(Level.FINER, "Attempting to query 100 messages...");
@@ -79,14 +90,14 @@ public class ChannelTask extends Task {
 
             for (DataObject message : messages) {
                 messageId = message.getString("id", null);
-                lines.add(message.toPrettyString());
+                lineBuffer.add(message.toPrettyString());
                 amount++;
             }
 
             // save messages
             logger.log(Level.FINER, "Writing to file...");
             try {
-                this.write(lines);
+                this.write(lineBuffer);
             } catch (IOException e) {
                 logger.log(Level.WARNING, "Encountered an unexpected exception while writing message file.", e);
             }
@@ -95,6 +106,11 @@ public class ChannelTask extends Task {
         logger.log(Level.INFO, "Task finished with " + amount + " processed messages.");
     }
 
+    /**
+     * Writes buffered lines provided in a {@link LinkedList} to the message file.
+     * @param lines Buffered lines.
+     * @throws IOException if an issue with the filesystem occurs.
+     */
     private void write(@NotNull LinkedList<String> lines) throws IOException {
         FileWriter writer = new FileWriter(fileMessages, true);
         while (!lines.isEmpty())
@@ -102,6 +118,13 @@ public class ChannelTask extends Task {
         writer.close();
     }
 
+    /**
+     * Provides the channel part of the name of a {@link ChannelTask}. If the Channel is an instance of
+     * {@link BaseGuildMessageChannel} the snowflake id of the {@link Guild} is added as prefix.
+     * <p> The provided name represents the part after <code>CHANNEL/</code>.
+     * @param channel Channel of this Task
+     * @return String representation of the name.
+     */
     public static String provideName(MessageChannel channel) {
         return ((channel instanceof BaseGuildMessageChannel guildChannel) ? "G" + guildChannel.getGuild().getId() + "/C" : "P") + channel.getId();
     }

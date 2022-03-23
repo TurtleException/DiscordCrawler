@@ -5,11 +5,15 @@ import de.eldritch.discord.turtlecrawler.task.TaskManager;
 import de.eldritch.discord.turtlecrawler.util.logging.NestedToggleLogger;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
+import net.dv8tion.jda.api.managers.Presence;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 import java.util.logging.Level;
 
+/**
+ * Responsible for refreshing the bots {@link Presence}.
+ */
 public class PresenceController extends Thread {
     private final JDAWrapper wrapper;
     private final NestedToggleLogger logger;

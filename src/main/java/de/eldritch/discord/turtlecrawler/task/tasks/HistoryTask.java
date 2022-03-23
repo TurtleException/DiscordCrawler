@@ -5,6 +5,7 @@ import de.eldritch.discord.turtlecrawler.task.TaskManager;
 import de.eldritch.discord.turtlecrawler.util.RestActionUtil;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.entities.MessageHistory;
 import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.entities.EntityBuilder;
@@ -17,13 +18,37 @@ import java.util.List;
 import java.util.TreeSet;
 import java.util.logging.Level;
 
+/**
+ * A task that iterates through up tp 100 messages and provides them as a {@link TreeSet} of
+ * {@link DataObject DataObjects} sorted from oldest to newest.
+ */
 public class HistoryTask extends Task {
     private final MessageChannel channel;
+    /**
+     * Snowflake ID of the pivot message.
+     */
     private final String message;
+    /**
+     * Maximum amount of messages to retrieve.
+     * @see MessageHistory#getHistoryAfter(MessageChannel, String)
+     */
     private final int limit;
 
+    /**
+     * Message buffer, sorted by id (oldest to newest)
+     */
     private final TreeSet<DataObject> data;
 
+    /**
+     * Creates a new HistoryTask that pivots on the provided snowflake ID of a message and retrieves messages up to the
+     * specified limit.
+     * @param manager TaskManager responsible for this task.
+     * @param channel Channel to retrieve history from.
+     * @param message Snowflake ID of the pivot message, "<code>0</code>" if the pivot should be set to the beginning of
+     *                the channel.
+     * @param limit Maximum amount of messages to retrieve.
+     * @see ChannelTask#run()
+     */
     public HistoryTask(@NotNull TaskManager manager, @NotNull MessageChannel channel, @NotNull String message, @Range(from = 1, to = 100) int limit) {
         super(manager, "HISTORY/"
                 + ChannelTask.provideName(channel) + "/M"
@@ -74,10 +99,21 @@ public class HistoryTask extends Task {
         logger.log(Level.FINE, "Checked " + array.length() + " messages for attachments.");
     }
 
+    /**
+     * Provides the message buffer containing {@link DataObject} representations of messages.
+     * <p>This method will return an empty buffer if {@link HistoryTask#run()} has not been called yet, or it has been
+     * called asynchronously and has not yet returned.
+     * @return Message buffer.
+     */
     public List<DataObject> getData() {
         return List.copyOf(data);
     }
 
+    /**
+     * Return <code>true</code> if the retrieved history is shorter than it could have been according to the provided
+     * limit, indicating that the end of the channel has been reached.
+     * @return <code>true</code> if the retrieved history is shorter than the limit.
+     */
     public boolean isShortened() {
         return limit > data.size();
     }

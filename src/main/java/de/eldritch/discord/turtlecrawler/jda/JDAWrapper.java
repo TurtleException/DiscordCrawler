@@ -13,6 +13,9 @@ import java.io.*;
 import java.util.Properties;
 import java.util.logging.Level;
 
+/**
+ * Simple wrapper to handle {@link JDA} initialization and manage the {@link PresenceController}.
+ */
 public class JDAWrapper {
     static final NestedToggleLogger LOGGER = new NestedToggleLogger("JDA", DiscordTurtleCrawler.LOGGER);
     /**

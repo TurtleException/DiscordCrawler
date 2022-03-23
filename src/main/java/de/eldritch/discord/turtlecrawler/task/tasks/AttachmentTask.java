@@ -12,6 +12,9 @@ import java.io.IOException;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 
+/**
+ * A Task that downloads an attachment file.
+ */
 public class AttachmentTask extends Task {
     private final Message.Attachment attachment;
     private final MessageChannel channel;
@@ -26,6 +29,8 @@ public class AttachmentTask extends Task {
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public void run() {
+        logger.log(Level.FINE, "Preparing file download...");
+
         File file = new File(manager.getDIR(), MiscUtil.getDIR(channel)
                 + File.separator + "attachments"
                 + File.separator + attachment.getId()
@@ -39,10 +44,14 @@ public class AttachmentTask extends Task {
             return;
         }
 
+        logger.log(Level.FINE, "Downloading file... ("  + attachment.getSize() + " bytes)");
+
         try {
             attachment.downloadToFile(file).get();
         } catch (InterruptedException | ExecutionException e) {
-            logger.log(Level.WARNING, "Failed to download attachment " + attachment.getFileName() + " (" + attachment.getSize() + " bytes)", e);
+            logger.log(Level.WARNING, "Failed to download attachment " + attachment.getFileName(), e);
         }
+
+        logger.log(Level.FINE, "File downloaded.");
     }
 }

@@ -6,6 +6,7 @@ import de.eldritch.discord.turtlecrawler.util.MiscUtil;
 import net.dv8tion.jda.api.entities.BaseGuildMessageChannel;
 import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
@@ -17,9 +18,16 @@ import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 
+/**
+ * A Task that retrieves the metadata of a {@link Guild} and registers {@link ChannelTask ChannelTasks} for each
+ * {@link MessageChannel} to process messages.
+ */
 public class GuildTask extends Task {
     private final Guild guild;
 
+    /**
+     * Output directory for metadata and sub-tasks.
+     */
     private final File dir;
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
@@ -73,16 +81,31 @@ public class GuildTask extends Task {
                 logger.log(Level.WARNING, "Could not register ChannelTask for channel " + channel.getId(), e);
             }
         }
+
+        logger.log(Level.INFO, "Task finished with " + channels.size() + " processed channels.");
     }
 
+    /**
+     * Provides a file in an existing directory. If the file does not yet exist a new file will be created.
+     * @param dir (Existing) directory to create the file in
+     * @param filename Name of the file - possibly path containing other directories (which will not be created by this
+     *                 method!)
+     * @return New {@link File} object representing the existing file.
+     * @throws IOException if an issue with the filesystem occurs.
+     */
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    private static File provideFile(File dir, String filename) throws IOException {
+    private static File provideFile(File dir, @NotNull String filename) throws IOException {
         File file = new File(dir, filename);
         file.createNewFile();
         return file;
     }
 
-    private void handleMetadata(String filename, Route.CompiledRoute route) {
+    /**
+     * Requests data from the Discord API via the specified {@link Route} and saves it to a JSON file.
+     * @param filename Name of the file, excluding the <code>.json</code> extension.
+     * @param route Compiled route object.
+     */
+    private void handleMetadata(@NotNull String filename, @NotNull Route.CompiledRoute route) {
         logger.log(Level.FINEST, "Requesting " + filename + " metadata...");
 
         File file;

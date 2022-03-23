@@ -13,7 +13,7 @@ import java.io.*;
 import java.util.logging.Level;
 
 /**
- * Represents a Task that interacts with the Discord Content Delivery Network (CDN).
+ * A Task that interacts with the Discord Content Delivery Network (CDN).
  */
 public class ContentTask extends Task {
     private final String url;
@@ -60,12 +60,22 @@ public class ContentTask extends Task {
         logger.log(Level.FINE, "File " + stripPrefix(url) + " downloaded.");
     }
 
-    private static String stripPrefix(String url) {
+    /**
+     * Returns a String that is equal to the provided String but without the common leading Discord CDN url.
+     * @param url URL that should be shortened.
+     * @return URL without Discord CDN prefix.
+     */
+    private static String stripPrefix(@NotNull String url) {
         String prefix = "https://cdn.discordapp.com/";
         return url.startsWith(prefix) ? url.substring(prefix.length()) : url;
     }
 
-    private static String buildPath(String url) {
+    /**
+     * Provides the path to where the File should be saved.
+     * @param url URL to the CDN.
+     * @return Built path.
+     */
+    private static String buildPath(@NotNull String url) {
         return "content" + File.separator + stripPrefix(url).replaceAll("/", File.separator);
     }
 }
