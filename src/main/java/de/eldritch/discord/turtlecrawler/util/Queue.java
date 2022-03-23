@@ -40,21 +40,18 @@ public class Queue<E> implements Collection<E> {
         return linkedList.contains(o);
     }
 
-    @NotNull
     @Override
-    public Iterator<E> iterator() {
+    public @NotNull Iterator<E> iterator() {
         return linkedList.iterator();
     }
 
-    @NotNull
     @Override
     public Object[] toArray() {
         return linkedList.toArray();
     }
 
-    @NotNull
     @Override
-    public <T> T[] toArray(@NotNull T[] a) {
+    public <T> T[] toArray(T[] a) {
         return linkedList.toArray(a);
     }
 

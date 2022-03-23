@@ -6,7 +6,6 @@ import de.eldritch.discord.turtlecrawler.util.logging.NestedToggleLogger;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.HashSet;
 import java.util.logging.Level;
 
 /**
@@ -24,6 +23,7 @@ public class TaskManager {
     /**
      * The unique name of this manager provided by {@link DistributionManager#newTaskManager()}.
      */
+    @SuppressWarnings({"FieldCanBeLocal", "unused"})
     private final String name;
     /**
      * The designated directory for this manager.
@@ -31,13 +31,9 @@ public class TaskManager {
     private final File dir;
 
     /**
-     * Set of all tasks this manager is responsible for.
-     */
-    private final HashSet<Task> tasks = new HashSet<>();
-
-    /**
      * The total amount of processed messages by this TaskManager.
      */
+    @SuppressWarnings("unused")
     private long totalProcessedMessages = 0L;
 
     /**
@@ -67,9 +63,6 @@ public class TaskManager {
      * @param task The task object.
      */
     public synchronized void register(@NotNull Task task) {
-        if (tasks.contains(task))
-            throw new IllegalArgumentException("Task is already registered");
-
         logger.log(Level.FINE, "Submitting " + task.getName() + "...");
 
         executor.submit(() -> {

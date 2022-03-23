@@ -13,9 +13,6 @@ public class CommandHelper {
     /**
      * Provides a {@link Guild} object from a snowflake ID.
      * @param snowflake ID of the guild.
-     * @return
-     * @throws NullPointerException
-     * @throws NumberFormatException
      */
     public static Guild getGuild(String snowflake) throws NullPointerException, NumberFormatException {
         if (snowflake == null)
@@ -31,11 +28,7 @@ public class CommandHelper {
 
     /**
      * Provides a {@link BaseGuildMessageChannel} object from a {@link Guild} and a snowflake ID.
-     * @param guild
      * @param snowflake ID of the channel.
-     * @return
-     * @throws NullPointerException
-     * @throws NumberFormatException
      */
     public static BaseGuildMessageChannel getChannel(Guild guild, String snowflake) throws NullPointerException, NumberFormatException {
         if (snowflake == null)
@@ -52,9 +45,6 @@ public class CommandHelper {
     /**
      * Provides a {@link PrivateChannel} object from a snowflake ID.
      * @param snowflake ID of the channel.
-     * @return
-     * @throws NullPointerException
-     * @throws NumberFormatException
      */
     public static PrivateChannel getChannel(String snowflake) throws NullPointerException, NumberFormatException {
         if (snowflake == null)

@@ -9,14 +9,10 @@ import net.dv8tion.jda.internal.requests.Route;
 
 public class RestActionUtil {
     public static RestAction<DataObject> getDataObject(JDA jda, Route.CompiledRoute route) {
-        return new RestActionImpl<DataObject>(jda, route, (response, dataObjectRequest) -> {
-            return response.getObject();
-        });
+        return new RestActionImpl<>(jda, route, (response, dataObjectRequest) -> response.getObject());
     }
 
     public static RestAction<DataArray> getDataArray(JDA jda, Route.CompiledRoute route) {
-        return new RestActionImpl<DataArray>(jda, route, (response, dataObjectRequest) -> {
-            return response.getArray();
-        });
+        return new RestActionImpl<>(jda, route, (response, dataObjectRequest) -> response.getArray());
     }
 }

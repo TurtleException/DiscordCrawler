@@ -19,7 +19,6 @@ import java.util.logging.Level;
 public class ChannelTask extends Task {
     private final MessageChannel channel;
 
-    private final File dir;
     private final File fileMetadata;
     private final File fileMessages;
 
@@ -29,8 +28,8 @@ public class ChannelTask extends Task {
         this.channel = channel;
 
 
-        this.dir = new File(manager.getDIR(), MiscUtil.getDIR(channel));
-        this.dir.mkdirs();
+        File dir = new File(manager.getDIR(), MiscUtil.getDIR(channel));
+        dir.mkdirs();
 
         this.fileMetadata = new File(dir, "metadata.json");
         this.fileMetadata.createNewFile();

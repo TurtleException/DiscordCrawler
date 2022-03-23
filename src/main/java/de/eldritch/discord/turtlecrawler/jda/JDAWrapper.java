@@ -1,8 +1,6 @@
 package de.eldritch.discord.turtlecrawler.jda;
 
-import de.eldritch.discord.turtlecrawler.Config;
 import de.eldritch.discord.turtlecrawler.DiscordTurtleCrawler;
-import de.eldritch.discord.turtlecrawler.Main;
 import de.eldritch.discord.turtlecrawler.util.logging.NestedToggleLogger;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -25,7 +23,8 @@ public class JDAWrapper {
     /**
      * Constantly updates the {@link Presence} of the bot.
      */
-    private PresenceController presenceController;
+    @SuppressWarnings({"FieldCanBeLocal", "unused"})
+    private final PresenceController presenceController;
 
     /**
      * Discord API authorization token
@@ -61,7 +60,6 @@ public class JDAWrapper {
 
     /**
      * Builds the {@link JDA} instance.
-     * @throws LoginException
      */
     private void init() throws LoginException {
         LOGGER.log(Level.INFO, "Initializing...");

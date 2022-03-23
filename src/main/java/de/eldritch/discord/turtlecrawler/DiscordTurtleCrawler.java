@@ -1,7 +1,6 @@
 package de.eldritch.discord.turtlecrawler;
 
 import de.eldritch.discord.turtlecrawler.jda.JDAWrapper;
-import de.eldritch.discord.turtlecrawler.task.TaskManager;
 import de.eldritch.discord.turtlecrawler.ui.input.Receiver;
 import de.eldritch.discord.turtlecrawler.util.Status;
 import de.eldritch.discord.turtlecrawler.util.logging.SystemOutputToggleLogger;
@@ -15,6 +14,7 @@ import java.util.logging.Level;
  * The actual main class of the program.
  * @see Main
  */
+@SuppressWarnings("FieldCanBeLocal")
 public class DiscordTurtleCrawler {
     private final Status status = new Status();
 

@@ -13,11 +13,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+@SuppressWarnings("FieldCanBeLocal")
 public class DistributionManager {
     private final NestedToggleLogger logger;
     private final DiscordTurtleCrawler main;
 
-    private HashSet<TaskManager> taskManagers = new HashSet<>();
+    private final HashSet<TaskManager> taskManagers = new HashSet<>();
 
     public static final File OUTPUT_DIR = new File(DiscordTurtleCrawler.DIR, "out");
     static {

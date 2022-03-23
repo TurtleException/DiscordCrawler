@@ -12,17 +12,19 @@ import java.util.logging.Level;
  */
 public class TaskExecutor extends ThreadPoolExecutor {
     private final NestedToggleLogger logger;
+
+    @SuppressWarnings({"FieldCanBeLocal", "unused"})
     private final TaskManager manager;
 
     /**
      * This constructor creates a new {@link TaskExecutor} with a call to the super constructor that is equivalent to
      * {@link Executors#newCachedThreadPool()}.
-     * @param manager
+     * @param manager TaskManager responsible for this Executor
      */
     TaskExecutor(@NotNull TaskManager manager) {
         super(0, Integer.MAX_VALUE,
                 60L, TimeUnit.SECONDS,
-                new SynchronousQueue<Runnable>());
+                new SynchronousQueue<>());
 
         this.manager = manager;
         this.logger = new NestedToggleLogger("EXECUTOR", manager.getLogger());
