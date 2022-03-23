@@ -30,6 +30,8 @@ public class TaskExecutor extends ThreadPoolExecutor {
         this.logger = new NestedToggleLogger("EXECUTOR", manager.getLogger());
     }
 
+
+
     @Override
     protected void afterExecute(Runnable r, Throwable t) {
         if (t != null) {
@@ -39,6 +41,8 @@ public class TaskExecutor extends ThreadPoolExecutor {
                 logger.log(Level.WARNING, "Unknown Runnable failed execution.", t);
             }
         }
+
+        manager.notifyTask(r, false);
 
         super.afterExecute(r, t);
     }

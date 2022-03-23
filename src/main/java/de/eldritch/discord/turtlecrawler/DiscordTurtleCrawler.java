@@ -1,11 +1,16 @@
 package de.eldritch.discord.turtlecrawler;
 
 import de.eldritch.discord.turtlecrawler.jda.JDAWrapper;
+import de.eldritch.discord.turtlecrawler.task.TaskManager;
 import de.eldritch.discord.turtlecrawler.ui.input.Receiver;
 import de.eldritch.discord.turtlecrawler.util.Status;
+import de.eldritch.discord.turtlecrawler.util.logging.LogUtil;
+import de.eldritch.discord.turtlecrawler.util.logging.SimpleFormatter;
 import de.eldritch.discord.turtlecrawler.util.logging.SystemOutputToggleLogger;
+import net.dv8tion.jda.api.JDA;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Scanner;
 import java.util.logging.Level;
@@ -29,9 +34,19 @@ public class DiscordTurtleCrawler {
         try {
             f = new File(Main.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile();
         } catch (URISyntaxException e) {
-            LOGGER.log(Level.SEVERE, "Failed to declare directory", e);
+            System.out.println("Failed to declare directory.");
+            e.printStackTrace();
         }
         DIR = f;
+    }
+
+    // Add FileHandler to LOGGER
+    static {
+        try {
+            LOGGER.addHandler(LogUtil.getFileHandler(new SimpleFormatter()));
+        } catch (IOException e) {
+            LOGGER.log(Level.WARNING, "Could not register FileHandler", e);
+        }
     }
 
     private JDAWrapper jdaWrapper;
@@ -89,7 +104,23 @@ public class DiscordTurtleCrawler {
 
         LOGGER.log(Level.INFO, "Shutting down...");
 
-        // TODO: save & exit
+        LOGGER.log(Level.INFO, "Notifying TaskManagers.");
+        manager.getTaskManagers().forEach(TaskManager::shutdown);
+
+        LOGGER.log(Level.INFO, "Notifying JDAWrapper.");
+        jdaWrapper.shutdown();
+
+        try {
+            jdaWrapper.getJDA().awaitStatus(JDA.Status.SHUTDOWN);
+        } catch (InterruptedException e) {
+            LOGGER.log(Level.WARNING, "Could not properly shut down JDA");
+        }
+
+        LOGGER.log(Level.INFO, "Notifying LOGGER.");
+        LOGGER.log(Level.ALL, "OK bye.");
+        LOGGER.shutdown();
+
+        System.exit(0);
     }
 
     /* ----- GETTERS ----- */

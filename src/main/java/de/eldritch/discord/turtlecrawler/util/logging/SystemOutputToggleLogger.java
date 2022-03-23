@@ -1,8 +1,9 @@
 package de.eldritch.discord.turtlecrawler.util.logging;
 
-import de.eldritch.discord.turtlecrawler.Config;
 import de.eldritch.discord.turtlecrawler.util.Queue;
 
+import java.util.Arrays;
+import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.logging.StreamHandler;
@@ -51,5 +52,9 @@ public final class SystemOutputToggleLogger extends Logger {
 
     private void queue(LogRecord record) {
         queue.add(record);
+    }
+
+    public void shutdown() {
+        Arrays.stream(getHandlers()).forEach(Handler::close);
     }
 }

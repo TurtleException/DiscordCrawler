@@ -53,9 +53,11 @@ public class DistributionManager {
         while (increments.contains(increment))
             increment++;
 
-        TaskManager manager =  new TaskManager(name + "-" + increment);
-        taskManagers.add(manager);
-        return manager;
+        synchronized (taskManagers) {
+            TaskManager manager = new TaskManager(name + "-" + increment);
+            taskManagers.add(manager);
+            return manager;
+        }
     }
 
     private List<File> getOutputDirs() {
@@ -64,6 +66,14 @@ public class DistributionManager {
     }
 
     public Set<TaskManager> getTaskManagers() {
-        return Set.copyOf(taskManagers);
+        synchronized (taskManagers) {
+            return Set.copyOf(taskManagers);
+        }
+    }
+
+    public void notifyDeath(@NotNull TaskManager taskManager) {
+        synchronized (taskManagers) {
+            taskManagers.remove(taskManager);
+        }
     }
 }

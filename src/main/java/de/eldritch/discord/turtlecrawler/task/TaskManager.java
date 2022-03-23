@@ -2,10 +2,13 @@ package de.eldritch.discord.turtlecrawler.task;
 
 import de.eldritch.discord.turtlecrawler.DiscordTurtleCrawler;
 import de.eldritch.discord.turtlecrawler.DistributionManager;
+import de.eldritch.discord.turtlecrawler.Main;
 import de.eldritch.discord.turtlecrawler.util.logging.NestedToggleLogger;
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.File;
+import java.util.HashSet;
 import java.util.logging.Level;
 
 /**
@@ -29,6 +32,11 @@ public class TaskManager {
      * The designated directory for this manager.
      */
     private final File dir;
+
+    /**
+     * Keeps track of all {@link Runnable} objects that are processed by the {@link TaskExecutor}.
+     */
+    private final HashSet<Runnable> tasks = new HashSet<>();
 
     /**
      * The total amount of processed messages by this TaskManager.
@@ -64,6 +72,8 @@ public class TaskManager {
      */
     public synchronized void register(@NotNull Task task) {
         logger.log(Level.FINE, "Submitting " + task.getName() + "...");
+
+        notifyTask(task, true);
 
         executor.submit(() -> {
             logger.log(Level.FINE, "Starting " + task.getName() + ".");
@@ -102,5 +112,25 @@ public class TaskManager {
 
     public long getTotalProcessedMessages() {
         return updateMessages(0);
+    }
+
+    synchronized void notifyTask(Runnable task, boolean status) {
+        if (status) {
+            tasks.add(task);
+        } else {
+            tasks.remove(task);
+
+            if (tasks.size() <= 0) {
+                logger.log(Level.INFO, "No more tasks in executor");
+                shutdown();
+            }
+        }
+    }
+
+    public void shutdown() {
+        logger.log(Level.INFO, "Shutting down down...");
+
+        executor.shutdown();
+        Main.singleton.getManager().notifyDeath(this);
     }
 }
