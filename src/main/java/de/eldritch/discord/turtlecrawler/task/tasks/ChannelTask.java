@@ -67,7 +67,7 @@ public class ChannelTask extends Task {
 
         LinkedList<String> lines = new LinkedList<>();
 
-        while (historyTask == null || (historyTask.isDone() && !historyTask.isShortened())) {
+        while (historyTask == null || !historyTask.isShortened()) {
             logger.log(Level.FINER, "Attempting to query 100 messages...");
             historyTask = new HistoryTask(manager, channel, messageId, 100);
 

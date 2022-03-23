@@ -22,8 +22,6 @@ public class HistoryTask extends Task {
     private final String message;
     private final int limit;
 
-    private boolean done = false;
-
     private final TreeSet<DataObject> data;
 
     public HistoryTask(@NotNull TaskManager manager, @NotNull MessageChannel channel, @NotNull String message, @Range(from = 1, to = 100) int limit) {
@@ -54,8 +52,6 @@ public class HistoryTask extends Task {
 
         manager.updateMessages(data.size());
 
-        this.done = true;
-
 
         /* ----- PROCESS ATTACHMENTS ----- */
         logger.log(Level.FINE, "Iterating messages to find attachments...");
@@ -84,9 +80,5 @@ public class HistoryTask extends Task {
 
     public boolean isShortened() {
         return limit > data.size();
-    }
-
-    public boolean isDone() {
-        return done;
     }
 }

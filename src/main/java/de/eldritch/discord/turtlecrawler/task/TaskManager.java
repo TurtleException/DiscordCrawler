@@ -69,15 +69,6 @@ public class TaskManager {
             logger.log(Level.FINE, "Starting " + task.getName() + ".");
             task.run();
             logger.log(Level.FINE, task.getName() + " is done.");
-
-            if (task instanceof Completable completable) {
-                logger.log(Level.FINE, "Submitting " + task.getName() + " for completion...");
-                executor.submit(() -> {
-                    logger.log(Level.FINE, "Completing " + task.getName() + "...");
-                    completable.complete();
-                    logger.log(Level.FINE, task.getName() + " is done.");
-                });
-            }
         });
     }
 
