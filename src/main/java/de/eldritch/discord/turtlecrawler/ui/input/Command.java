@@ -3,6 +3,9 @@ package de.eldritch.discord.turtlecrawler.ui.input;
 import de.eldritch.discord.turtlecrawler.DiscordTurtleCrawler;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -39,5 +42,10 @@ public interface Command {
      */
     default void logWarn(String msg, Throwable thrown) {
         DiscordTurtleCrawler.LOGGER.log(Level.WARNING, msg, thrown);
+    }
+
+    default void out(String msg) {
+        String time  = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss").format(Instant.now().atZone(ZoneId.of("UTC")));
+        System.out.println("[" + time + "]: [" + this.getClass().getSimpleName() + "] " + msg);
     }
 }

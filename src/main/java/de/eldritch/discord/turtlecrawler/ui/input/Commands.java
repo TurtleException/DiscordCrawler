@@ -2,9 +2,20 @@ package de.eldritch.discord.turtlecrawler.ui.input;
 
 import de.eldritch.discord.turtlecrawler.DiscordTurtleCrawler;
 import de.eldritch.discord.turtlecrawler.ui.input.commands.CommandCrawl;
+import de.eldritch.discord.turtlecrawler.ui.input.commands.CommandHelp;
 import de.eldritch.discord.turtlecrawler.ui.input.commands.CommandLevel;
+import de.eldritch.discord.turtlecrawler.ui.input.commands.CommandLevelJDA;
+import de.eldritch.discord.turtlecrawler.util.logging.SystemOutputToggleLogger;
 
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
 
 /**
  * Both a collection of all available CLI commands and responsible for the basic logic behind command management.
@@ -20,8 +31,10 @@ public class Commands {
 
     // class initializer to have commands available statically
     static {
-        commands.put("crawl" , new CommandCrawl());
-        commands.put("level" , new CommandLevel());
+        commands.put("crawl"    , new CommandCrawl());
+        commands.put("help"     , new CommandHelp());
+        commands.put("level"    , new CommandLevel());
+        commands.put("level-jda", new CommandLevelJDA());
     }
 
     /**
@@ -40,5 +53,9 @@ public class Commands {
         } else {
             return false;
         }
+    }
+
+    public static Map<String, Command> getCommands() {
+        return Map.copyOf(commands);
     }
 }

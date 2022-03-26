@@ -35,11 +35,13 @@ public class PresenceController extends Thread {
     @Override
     public void run() {
         while (!isInterrupted()) {
-            this.updatePresence();
+            try {
+                this.updatePresence();
+            } catch (IllegalStateException ignored) { /* DIST MANAGER NOT READY */ }
 
             // wait 10 seconds
             try {
-                this.wait(1000L);
+                Thread.sleep(10000L);
             } catch (InterruptedException e) {
                 logger.log(Level.FINE, "Thread interrupted while waiting", e);
             }

@@ -6,11 +6,13 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 @SuppressWarnings("FieldCanBeLocal")
@@ -35,7 +37,9 @@ public class DistributionManager {
     public TaskManager newTaskManager() {
         Instant instant = Instant.now();
 
-        String name = DateTimeFormatter.ISO_DATE.format(instant);
+        logger.log(Level.INFO, "New TaskManager requested. Building...");
+
+        String name = DateTimeFormatter.ofPattern("uuuu-MM-dd").format(instant.atZone(ZoneId.of("UTC")));
 
         // retrieve increment
         List<Integer> increments = getOutputDirs().stream()
@@ -53,15 +57,18 @@ public class DistributionManager {
         while (increments.contains(increment))
             increment++;
 
+        logger.log(Level.FINE, "Incrementing ID to " + increment);
+
         synchronized (taskManagers) {
             TaskManager manager = new TaskManager(name + "-" + increment);
             taskManagers.add(manager);
+            logger.log(Level.INFO, "Providing new TaskManager '" + manager.getName() + "'");
             return manager;
         }
     }
 
     private List<File> getOutputDirs() {
-        File[] arr = OUTPUT_DIR.listFiles((dir, name) -> Pattern.matches("", name));
+        File[] arr = OUTPUT_DIR.listFiles();
         return arr != null ? Arrays.stream(arr).filter(File::isDirectory).toList() : List.of();
     }
 
@@ -72,6 +79,7 @@ public class DistributionManager {
     }
 
     public void notifyDeath(@NotNull TaskManager taskManager) {
+        logger.log(Level.INFO, "TaskManager " + taskManager.getName() + " has died.");
         synchronized (taskManagers) {
             taskManagers.remove(taskManager);
         }

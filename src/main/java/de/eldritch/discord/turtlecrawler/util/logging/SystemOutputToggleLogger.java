@@ -3,22 +3,19 @@ package de.eldritch.discord.turtlecrawler.util.logging;
 import de.eldritch.discord.turtlecrawler.util.Queue;
 
 import java.util.Arrays;
-import java.util.logging.Handler;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
-import java.util.logging.StreamHandler;
+import java.util.logging.*;
 
 public final class SystemOutputToggleLogger extends Logger {
     private boolean active = true;
 
     private final Queue<LogRecord> queue = new Queue<>(100);
 
-    private final StreamHandler systemOutHandler;
+    private final SimpleFormatter simpleFormatter = new SimpleFormatter();
 
     public SystemOutputToggleLogger(String name) {
         super(name, null);
 
-        systemOutHandler = new StreamHandler(System.out, new SimpleFormatter());
+        this.setLevel(Level.INFO);
     }
 
     public boolean isActive() {
@@ -47,7 +44,10 @@ public final class SystemOutputToggleLogger extends Logger {
     }
 
     public void publishToSystemOut(LogRecord record) {
-        systemOutHandler.publish(record);
+        if (this.getLevel().intValue() > record.getLevel().intValue()) return;
+
+        record.setLoggerName(getName());
+        System.out.print(simpleFormatter.format(record));
     }
 
     private void queue(LogRecord record) {

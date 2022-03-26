@@ -1,9 +1,9 @@
 package de.eldritch.discord.turtlecrawler.util.logging;
 
-import de.eldritch.discord.turtlecrawler.Config;
 import de.eldritch.discord.turtlecrawler.util.Queue;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import java.util.logging.StreamHandler;
@@ -24,12 +24,13 @@ public class NestedToggleLogger extends Logger {
         super(name, null);
 
         this.setUseParentHandlers(false);
+        this.setLevel(Level.ALL);
 
         // manually publish records to parent
         this.addHandler(new StreamHandler() {
             @Override
             public void publish(LogRecord record) {
-                record.setMessage("[" + record.getLoggerName() + "] " + record.getMessage());
+                record.setMessage("[" + name + "] " + record.getMessage());
                 parent.log(record);
             }
         });

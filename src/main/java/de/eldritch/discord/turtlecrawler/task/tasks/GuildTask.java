@@ -7,6 +7,9 @@ import net.dv8tion.jda.api.entities.BaseGuildMessageChannel;
 import net.dv8tion.jda.api.entities.Emote;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.MessageChannel;
+import net.dv8tion.jda.api.requests.Response;
+import net.dv8tion.jda.api.requests.restaction.GuildAction;
+import net.dv8tion.jda.api.utils.data.DataArray;
 import net.dv8tion.jda.api.utils.data.DataObject;
 import net.dv8tion.jda.internal.requests.RestActionImpl;
 import net.dv8tion.jda.internal.requests.Route;
@@ -43,7 +46,7 @@ public class GuildTask extends Task {
     public void run() {
         logger.log(Level.FINE, "Processing metadata...");
 
-        this.handleMetadata("guild"        , Route.Guilds.GET_GUILD.compile(guild.getId()));
+        this.handleMetadata("guild"        , Route.Guilds.GET_GUILD.compile(guild.getId()).withQueryParams("with_counts", "true"));
         this.handleMetadata("channels"     , Route.Guilds.GET_CHANNELS.compile(guild.getId()));
         this.handleMetadata("bans"         , Route.Guilds.GET_BANS.compile(guild.getId()));
         this.handleMetadata("webhooks"     , Route.Guilds.GET_WEBHOOKS.compile(guild.getId()));
@@ -116,8 +119,8 @@ public class GuildTask extends Task {
             return;
         }
 
-        logger.log(Level.FINEST, "Querying API for " + filename + " metadata...");
-        DataObject data = new RestActionImpl<DataObject>(guild.getJDA(), route, (response, dataObjectRequest) -> response.getObject()).complete();
+        logger.log(Level.FINEST, "Querying API for '" + filename + "' metadata...");
+        DataObject data = new RestActionImpl<DataObject>(guild.getJDA(), route, (response, dataArrayRequest) -> response.getObject()).complete();
 
         logger.log(Level.FINEST, "Saving data to file.");
         try {
@@ -129,6 +132,6 @@ public class GuildTask extends Task {
             return;
         }
 
-        logger.log(Level.FINEST, "Done processing " + filename + " metadata.");
+        logger.log(Level.FINEST, "Done processing '" + filename + "' metadata.");
     }
 }

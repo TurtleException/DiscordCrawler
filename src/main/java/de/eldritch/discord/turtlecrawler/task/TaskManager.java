@@ -114,6 +114,10 @@ public class TaskManager {
         return updateMessages(0);
     }
 
+    public String getName() {
+        return name;
+    }
+
     synchronized void notifyTask(Runnable task, boolean status) {
         if (status) {
             tasks.add(task);

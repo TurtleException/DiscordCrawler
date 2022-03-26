@@ -1,6 +1,6 @@
 package de.eldritch.discord.turtlecrawler.util.logging;
 
-import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.logging.Formatter;
 import java.util.logging.LogRecord;
@@ -13,7 +13,7 @@ public class SimpleFormatter extends Formatter {
     public String format(LogRecord record) {
         if (record == null) return null;
 
-        String time  = DateTimeFormatter.ofPattern("yy-MM-dd HH:mm:ss").format(LocalDateTime.now());
+        String time  = DateTimeFormatter.ofPattern("uuuu-MM-dd HH:mm:ss").format(record.getInstant().atZone(ZoneId.of("UTC")));
         String level = String.format("%7s", record.getLevel().getName());
 
         StringBuilder str = new StringBuilder();
@@ -26,7 +26,7 @@ public class SimpleFormatter extends Formatter {
                     .append("]: ")
                     .append("[")
                     .append(record.getLoggerName())
-                    .append("]  ")
+                    .append("] ")
                     .append(record.getMessage())
                     .append("\n");
         } else {
@@ -43,7 +43,7 @@ public class SimpleFormatter extends Formatter {
             if (record.getThrown().getCause() != null) {
                 LogRecord subRecord = new LogRecord(record.getLevel(), null);
                 subRecord.setThrown(record.getThrown().getCause());
-                str.append("\n").append(" ".repeat(time.length() + 2)).append("CAUSED BY:\n").append(this.format(subRecord));
+                str.append("\n").append(" ".repeat(time.length() + 3)).append("CAUSED BY:\n").append(this.format(subRecord));
             }
         }
 

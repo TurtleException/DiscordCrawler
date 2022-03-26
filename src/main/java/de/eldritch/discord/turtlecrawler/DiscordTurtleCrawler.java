@@ -60,19 +60,25 @@ public class DiscordTurtleCrawler {
     void run() throws Exception {
         status.set(Status.INIT);
 
+        LOGGER.log(Level.INFO, "Initializing JDRWrapper...");
         jdaWrapper = new JDAWrapper();
+
+        LOGGER.log(Level.INFO, "Initializing DistributionManager...");
         manager = new DistributionManager(this);
+
+        LOGGER.log(Level.INFO, "Initializing Receiver...");
         receiver = new Receiver();
 
         /* ----- RUNNING ----- */
+
+        LOGGER.log(Level.INFO, "Startup done!");
 
         Scanner scanner = new Scanner(System.in);
 
         status.set(Status.RUNNING);
         while (status.get() == Status.RUNNING) {
-            if (scanner.hasNextLine()) {
-                receiver.receive(scanner.nextLine());
-            }
+            String line = scanner.nextLine();
+            receiver.receive(line);
         }
 
         LOGGER.log(Level.WARNING, "Main loop has been interrupted.");
@@ -110,12 +116,6 @@ public class DiscordTurtleCrawler {
         LOGGER.log(Level.INFO, "Notifying JDAWrapper.");
         jdaWrapper.shutdown();
 
-        try {
-            jdaWrapper.getJDA().awaitStatus(JDA.Status.SHUTDOWN);
-        } catch (InterruptedException e) {
-            LOGGER.log(Level.WARNING, "Could not properly shut down JDA");
-        }
-
         LOGGER.log(Level.INFO, "Notifying LOGGER.");
         LOGGER.log(Level.ALL, "OK bye.");
         LOGGER.shutdown();
@@ -126,8 +126,8 @@ public class DiscordTurtleCrawler {
     /* ----- GETTERS ----- */
 
     public DistributionManager getManager() throws IllegalStateException {
-        if (status.get() != Status.RUNNING)
-            throw new IllegalStateException("DistributionManager is only available during status RUNNING.");
+        if (status.get() != Status.RUNNING && status.get() != Status.STOPPING)
+            throw new IllegalStateException("DistributionManager is only available during status RUNNING or STOPPING.");
 
         return manager;
     }

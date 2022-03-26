@@ -1,10 +1,13 @@
 package de.eldritch.discord.turtlecrawler.ui.input;
 
+import de.eldritch.discord.turtlecrawler.DiscordTurtleCrawler;
 import de.eldritch.discord.turtlecrawler.Main;
 import de.eldritch.discord.turtlecrawler.task.Task;
 import net.dv8tion.jda.api.entities.BaseGuildMessageChannel;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.PrivateChannel;
+
+import java.util.logging.Level;
 
 /**
  * Provides helper methods for {@link Task} building.
@@ -50,7 +53,9 @@ public class CommandHelper {
         if (snowflake == null)
             throw new NullPointerException("Snowflake may not be null.");
 
-        PrivateChannel channel = Main.singleton.getJDAWrapper().getJDA().getPrivateChannelById(snowflake);
+        DiscordTurtleCrawler.LOGGER.log(Level.FINE, "Retrieving private channel " + snowflake + ". Thread might be blocked!");
+        PrivateChannel channel = Main.singleton.getJDAWrapper().getJDA().openPrivateChannelById(snowflake).complete();
+        DiscordTurtleCrawler.LOGGER.log(Level.FINE, "Done.");
 
         if (channel == null)
             throw new NullPointerException("Could not find PrivateChannel matching snowflake '" + snowflake + "'.");

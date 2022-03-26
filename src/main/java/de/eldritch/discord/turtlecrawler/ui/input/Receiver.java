@@ -28,23 +28,29 @@ public class Receiver {
      * @param line String representation of the input line.
      */
     public void receive(String line) {
-        switch (line) {
-            case "y", "Y" -> dialogueYes();
-            case "n", "N" -> dialogueNo();
-            case "p", "P" -> pauseOutput(!DiscordTurtleCrawler.LOGGER.isActive());
-            case "q", "Q" -> {
-                if (dialogue == DIALOGUE_QUIT) {
-                    DiscordTurtleCrawler.LOGGER.setActive(false);
-                    System.out.println("Do you want to quit? [Y/N]");
-                }
+        if (line == null)    return;
+        if (line.equals("")) return;
+
+        switch (line.toLowerCase()) {
+            case "y" -> dialogueYes();
+            case "n" -> dialogueNo();
+            case "p" -> pauseOutput(!DiscordTurtleCrawler.LOGGER.isActive());
+            case "q", "quit", "e", "exit" -> {
+                dialogue = DIALOGUE_QUIT;
+                DiscordTurtleCrawler.LOGGER.setActive(false);
+                System.out.println("Do you want to quit? [Y/N]");
             }
             default -> {
                 // check commands
                 String[] tokenArray = line.stripLeading().split(" ");
                 if (tokenArray.length > 0) {
-                    if (!Commands.onCommand(tokenArray[0],
-                            /* skip the initial command when passing arguments */
-                            Arrays.copyOfRange(tokenArray, 1, tokenArray.length - 1), line)) {
+                    String[] args = {};
+
+                    /* skip the initial command when passing arguments */
+                    if (tokenArray.length > 1)
+                        args = Arrays.copyOfRange(tokenArray, 1, tokenArray.length);
+
+                    if (!Commands.onCommand(tokenArray[0], args, line)) {
                         DiscordTurtleCrawler.LOGGER.log(Level.WARNING, "Unknown command: '" + tokenArray[0] + "'!");
                     }
                 }
@@ -88,6 +94,6 @@ public class Receiver {
      * @param b <code>true</code> to pause, <code>false</code> to resume output.
      */
     private void pauseOutput(boolean b) {
-        DiscordTurtleCrawler.LOGGER.setActive(b);
+        DiscordTurtleCrawler.LOGGER.setActive(!b);
     }
 }

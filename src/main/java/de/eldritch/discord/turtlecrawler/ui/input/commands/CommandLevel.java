@@ -14,7 +14,7 @@ public class CommandLevel implements Command {
     @Override
     public void onInvoke(String[] args, String raw) {
         if (args.length < 1) {
-            DiscordTurtleCrawler.LOGGER.log(Level.ALL, "Log level is currently set to " + DiscordTurtleCrawler.LOGGER.getLevel().getName());
+            get();
             return;
         }
 
@@ -31,12 +31,20 @@ public class CommandLevel implements Command {
             case "WARNING"         -> level = Level.WARNING;
             case "SEVERE"          -> level = Level.SEVERE;
             case "OFF"             -> level = Level.OFF;
-            default -> DiscordTurtleCrawler.LOGGER.log(Level.ALL, "Unknown argument: '" + args[0] + "'.");
+            default -> out("Unknown argument: '" + args[0] + "'.");
         }
 
+        set(level);
+    }
+
+    protected void get() {
+        out("Log level is currently set to " + DiscordTurtleCrawler.LOGGER.getLevel().getName());
+    }
+
+    protected void set(Level level) {
         if (level != null) {
             DiscordTurtleCrawler.LOGGER.setLevel(level);
-            DiscordTurtleCrawler.LOGGER.log(Level.ALL, "Log level has been set to " + level.getName());
+            out("Log level has been set to " + level.getName());
         }
     }
 
@@ -44,12 +52,13 @@ public class CommandLevel implements Command {
      * Lists all available log levels and prints them to the console.
      */
     private void list() {
-        DiscordTurtleCrawler.LOGGER.log(Level.ALL, "Log levels:  <ALL|FINEST|FINER|FINE|INFO|DEFAULT|WARNING|SEVERE|OFF>");
+        out("Log levels:  < ALL | FINEST | FINER | FINE | INFO | DEFAULT | WARNING | SEVERE | OFF >");
     }
 
     @Override
     public @NotNull List<String> usage() {
         return List.of(
+                "level",
                 "level list",
                 "level <level>"
         );

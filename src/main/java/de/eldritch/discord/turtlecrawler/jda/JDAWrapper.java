@@ -1,6 +1,7 @@
 package de.eldritch.discord.turtlecrawler.jda;
 
 import de.eldritch.discord.turtlecrawler.DiscordTurtleCrawler;
+import de.eldritch.discord.turtlecrawler.util.MiscUtil;
 import de.eldritch.discord.turtlecrawler.util.logging.NestedToggleLogger;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -11,13 +12,16 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import javax.security.auth.login.LoginException;
 import java.io.*;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 
 /**
  * Simple wrapper to handle {@link JDA} initialization and manage the {@link PresenceController}.
  */
 public class JDAWrapper {
-    static final NestedToggleLogger LOGGER = new NestedToggleLogger("JDA", DiscordTurtleCrawler.LOGGER);
+    public static final NestedToggleLogger LOGGER = new NestedToggleLogger("JDA", DiscordTurtleCrawler.LOGGER);
+    public static final NestedToggleLogger LOGGER_INTERNAL = new NestedToggleLogger("JDA-internal", LOGGER);
     /**
      * Singleton object to ensure instance uniqueness.
      */
@@ -84,14 +88,25 @@ public class JDAWrapper {
         LOGGER.log(Level.WARNING, "Received shutdown command!");
 
         jda.shutdown();
-
         try {
-            jda.awaitStatus(JDA.Status.SHUTDOWN);
-        } catch (InterruptedException e) {
-            LOGGER.log(Level.SEVERE, "Interrupted while shutting down.");
+            MiscUtil.await(() -> jda.getStatus() == JDA.Status.SHUTDOWN, 10, TimeUnit.SECONDS);
+        } catch (TimeoutException | InterruptedException e) {
+            LOGGER.log(Level.WARNING, "Failed to await status.");
+        }
+
+        if (jda.getStatus() != JDA.Status.SHUTDOWN) {
+            LOGGER.log(Level.INFO, "Attempting to force shutdown...");
             jda.shutdownNow();
-        } finally {
-            LOGGER.log(Level.INFO, "Shutdown complete.");
+
+            try {
+                MiscUtil.await(() -> jda.getStatus() == JDA.Status.SHUTDOWN, 2, TimeUnit.SECONDS);
+            } catch (TimeoutException | InterruptedException e) {
+                LOGGER.log(Level.WARNING, "Failed to await status.");
+            } finally {
+                LOGGER.log(Level.INFO, "JDA is now shut down.");
+            }
+        } else {
+            LOGGER.log(Level.INFO, "JDA is now shut down");
         }
 
         jda = null;
