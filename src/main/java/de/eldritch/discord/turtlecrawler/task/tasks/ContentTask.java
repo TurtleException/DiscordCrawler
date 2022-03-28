@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
 
 /**
  * A Task that interacts with the Discord Content Delivery Network (CDN).
@@ -29,6 +30,8 @@ public class ContentTask extends Task {
     @Override
     @SuppressWarnings("ResultOfMethodCallIgnored")
     public void run() {
+        logger.log(Level.INFO, "Downloading " + url);
+
         try {
             file.getParentFile().mkdirs();
             file.createNewFile();
@@ -57,7 +60,8 @@ public class ContentTask extends Task {
             logger.log(Level.WARNING, "Failed to download content from " + url, e);
             return;
         }
-        logger.log(Level.FINE, "File " + stripPrefix(url) + " downloaded.");
+
+        logger.log(Level.INFO, "File " + stripPrefix(url) + " downloaded.");
     }
 
     /**
@@ -76,6 +80,6 @@ public class ContentTask extends Task {
      * @return Built path.
      */
     private static String buildPath(@NotNull String url) {
-        return "content" + File.separator + stripPrefix(url).replaceAll("/", File.separator);
+        return "content" + File.separator + stripPrefix(url).replaceAll("/", Matcher.quoteReplacement(File.separator));
     }
 }

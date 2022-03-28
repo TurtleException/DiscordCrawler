@@ -78,6 +78,7 @@ public class TaskManager {
         executor.submit(() -> {
             logger.log(Level.FINE, "Starting " + task.getName() + ".");
             task.run();
+            notifyTask(task, false);
             logger.log(Level.FINE, task.getName() + " is done.");
         });
     }
@@ -119,20 +120,21 @@ public class TaskManager {
     }
 
     synchronized void notifyTask(Runnable task, boolean status) {
-        if (status) {
+        if (status)
             tasks.add(task);
-        } else {
+        else
             tasks.remove(task);
+    }
 
-            if (tasks.size() <= 0) {
-                logger.log(Level.INFO, "No more tasks in executor");
-                shutdown();
-            }
+    synchronized void checkDone() {
+        if (tasks.isEmpty()) {
+            logger.log(Level.INFO, "No more tasks in executor");
+            shutdown();
         }
     }
 
     public void shutdown() {
-        logger.log(Level.INFO, "Shutting down down...");
+        logger.log(Level.INFO, "Shutting down...");
 
         executor.shutdown();
         Main.singleton.getManager().notifyDeath(this);

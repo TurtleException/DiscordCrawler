@@ -44,18 +44,19 @@ public class GuildTask extends Task {
 
     @Override
     public void run() {
+        logger.log(Level.INFO, "Starting task (Guild \"" + guild.getName() + "\")");
+
         logger.log(Level.FINE, "Processing metadata...");
 
-        this.handleMetadata("guild"        , Route.Guilds.GET_GUILD.compile(guild.getId()).withQueryParams("with_counts", "true"));
-        this.handleMetadata("channels"     , Route.Guilds.GET_CHANNELS.compile(guild.getId()));
-        this.handleMetadata("bans"         , Route.Guilds.GET_BANS.compile(guild.getId()));
-        this.handleMetadata("webhooks"     , Route.Guilds.GET_WEBHOOKS.compile(guild.getId()));
-        this.handleMetadata("embed"        , Route.Guilds.GET_GUILD_EMBED.compile(guild.getId()));
-        this.handleMetadata("emotes"       , Route.Guilds.GET_GUILD_EMOTES.compile(guild.getId()));
-        this.handleMetadata("audit_logs"   , Route.Guilds.GET_AUDIT_LOGS.compile(guild.getId()));
-        this.handleMetadata("voice_regions", Route.Guilds.GET_VOICE_REGIONS.compile(guild.getId()));
-        this.handleMetadata("integrations" , Route.Guilds.GET_INTEGRATIONS.compile(guild.getId()));
-        this.handleMetadata("roles"        , Route.Roles.GET_ROLES.compile(guild.getId()));
+        this.handleMetadata("guild"        , Route.Guilds.GET_GUILD.compile(guild.getId())        , false);
+        this.handleMetadata("channels"     , Route.Guilds.GET_CHANNELS.compile(guild.getId())     , true );
+        this.handleMetadata("bans"         , Route.Guilds.GET_BANS.compile(guild.getId())         , true );
+        this.handleMetadata("webhooks"     , Route.Guilds.GET_WEBHOOKS.compile(guild.getId())     , true );
+        this.handleMetadata("emotes"       , Route.Guilds.GET_GUILD_EMOTES.compile(guild.getId()) , true );
+        this.handleMetadata("audit_logs"   , Route.Guilds.GET_AUDIT_LOGS.compile(guild.getId())   , false);
+        this.handleMetadata("voice_regions", Route.Guilds.GET_VOICE_REGIONS.compile(guild.getId()), true );
+        this.handleMetadata("integrations" , Route.Guilds.GET_INTEGRATIONS.compile(guild.getId()) , true );
+        this.handleMetadata("roles"        , Route.Roles.GET_ROLES.compile(guild.getId())         , true );
 
         logger.log(Level.FINER, "Processing guild icon...");
         if (guild.getIconUrl() != null)
@@ -85,7 +86,7 @@ public class GuildTask extends Task {
             }
         }
 
-        logger.log(Level.INFO, "Task finished with " + channels.size() + " processed channels.");
+        logger.log(Level.INFO, "Task finished with " + channels.size() + " processed channels. (Guild \"" + guild.getName() + "\")");
     }
 
     /**
@@ -108,7 +109,7 @@ public class GuildTask extends Task {
      * @param filename Name of the file, excluding the <code>.json</code> extension.
      * @param route Compiled route object.
      */
-    private void handleMetadata(@NotNull String filename, @NotNull Route.CompiledRoute route) {
+    private void handleMetadata(@NotNull String filename, @NotNull Route.CompiledRoute route, boolean array) {
         logger.log(Level.FINEST, "Requesting " + filename + " metadata...");
 
         File file;
@@ -120,12 +121,14 @@ public class GuildTask extends Task {
         }
 
         logger.log(Level.FINEST, "Querying API for '" + filename + "' metadata...");
-        DataObject data = new RestActionImpl<DataObject>(guild.getJDA(), route, (response, dataArrayRequest) -> response.getObject()).complete();
+        String data = new RestActionImpl<String>(guild.getJDA(), route, (response, dataArrayRequest) -> {
+            return array ? response.getArray().toPrettyString() : response.getObject().toPrettyString();
+        }).complete();
 
         logger.log(Level.FINEST, "Saving data to file.");
         try {
             FileWriter writer = new FileWriter(file, false);
-            writer.append(data.toPrettyString());
+            writer.append(data);
             writer.close();
         } catch (IOException e) {
             logger.log(Level.WARNING, "Encountered an unexpected exception while writing file: " + file.getPath(), e);

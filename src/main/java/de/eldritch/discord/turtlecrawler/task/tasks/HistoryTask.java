@@ -64,6 +64,8 @@ public class HistoryTask extends Task {
 
     @Override
     public void run() {
+        logger.log(Level.INFO, "Retrieving history for channel " + channel.getName());
+
         Route.CompiledRoute route = Route.Messages.GET_MESSAGE_HISTORY.compile(channel.getId()).withQueryParams("after", message, "limit", String.valueOf(limit));
         DataArray array = RestActionUtil.getDataArray(channel.getJDA(), route).complete();
 
@@ -90,13 +92,15 @@ public class HistoryTask extends Task {
             for (int j = 0; j < attachments.length(); j++) {
                 Message.Attachment attachment = builder.createMessageAttachment(attachments.getObject(j));
 
-                manager.register(new AttachmentTask(manager, channel, attachment));
+                new AttachmentTask(manager, channel, attachment).run();
             }
 
             logger.log(Level.FINER, "Processed " + attachments.length() + " attachments.");
         }
 
         logger.log(Level.FINE, "Checked " + array.length() + " messages for attachments.");
+
+        logger.log(Level.INFO, "Processed " + array.length() + " messages from channel " + channel.getName());
     }
 
     /**

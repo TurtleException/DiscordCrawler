@@ -7,8 +7,7 @@ import java.util.concurrent.*;
 import java.util.logging.Level;
 
 /**
- * An {@link ExecutorService} equivalent to {@link Executors#newCachedThreadPool()} that is responsible for executing
- * {@link Task Tasks}.
+ * An {@link ExecutorService} that is responsible for executing {@link Task Tasks}.
  */
 public class TaskExecutor extends ThreadPoolExecutor {
     private final NestedToggleLogger logger;
@@ -16,11 +15,6 @@ public class TaskExecutor extends ThreadPoolExecutor {
     @SuppressWarnings({"FieldCanBeLocal", "unused"})
     private final TaskManager manager;
 
-    /**
-     * This constructor creates a new {@link TaskExecutor} with a call to the super constructor that is equivalent to
-     * {@link Executors#newCachedThreadPool()}.
-     * @param manager TaskManager responsible for this Executor
-     */
     TaskExecutor(@NotNull TaskManager manager) {
         super(0, Integer.MAX_VALUE,
                 60L, TimeUnit.SECONDS,
@@ -42,7 +36,7 @@ public class TaskExecutor extends ThreadPoolExecutor {
             }
         }
 
-        manager.notifyTask(r, false);
+        manager.checkDone();
 
         super.afterExecute(r, t);
     }

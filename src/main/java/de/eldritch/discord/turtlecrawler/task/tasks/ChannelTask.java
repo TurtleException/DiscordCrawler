@@ -49,6 +49,8 @@ public class ChannelTask extends Task {
 
     @Override
     public void run() {
+        logger.log(Level.INFO, "Starting task (Channel \"" + channel.getName() + "\")");
+
         /* ----- METADATA ----- */
 
         logger.log(Level.FINE, "Processing metadata.");
@@ -103,7 +105,7 @@ public class ChannelTask extends Task {
             }
         }
         logger.log(Level.FINE, "No more history to process.");
-        logger.log(Level.INFO, "Task finished with " + amount + " processed messages.");
+        logger.log(Level.INFO, "Task finished with " + amount + " processed messages. (Channel \"" + channel.getName() + "\")");
     }
 
     /**
