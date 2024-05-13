@@ -4,16 +4,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>de.eldritch.discord.turtlecrawler</groupId>
-    <artifactId>DiscordTurtleCrawler</artifactId>
-    <version>01.01-048</version>
+    <groupId>de.turtleboi.discord_crawler</groupId>
+    <artifactId>DiscordCrawler</artifactId>
+    <version>02.01-alpha.1</version>
 
-    <!--
-         ,,
+    <!-- ,,
         (_ \_- -_
-          \  EXC )
-            lU lU
-    -->
+          \TURTLE)
+            lU lU   -->
 
     <build>
         <plugins>
