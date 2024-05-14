@@ -11,4 +11,4 @@
 # DiscordCrawler
 A simple bot to download the contents of a Discord channel or guild - Formatted like a personal data dump.
 
-Works with [JDA](https://github.com/discord-jda/JDA) and [picocli](https://github.com/remkop/picocli) 💚.
+Built with [JDA](https://github.com/discord-jda/JDA) and [picocli](https://github.com/remkop/picocli) 💚.
