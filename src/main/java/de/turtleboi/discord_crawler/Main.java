@@ -13,7 +13,7 @@ public class Main {
     static {
         System.out.print("Starting DiscordCrawler");
 
-        try (InputStream r = Main.class.getResourceAsStream("meta.properties")) {
+        try (InputStream r = Main.class.getClassLoader().getResourceAsStream("meta.properties")) {
             Properties metaProperties = new Properties();
             metaProperties.load(r);
 
