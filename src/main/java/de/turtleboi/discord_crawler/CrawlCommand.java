@@ -1,18 +1,17 @@
 package de.turtleboi.discord_crawler;
 
+import de.turtleboi.discord_crawler.collection.Collector;
+import de.turtleboi.discord_crawler.executor.Executor;
 import de.turtleboi.discord_crawler.job.ChannelJob;
-import de.turtleboi.discord_crawler.job.CompleteJob;
 import de.turtleboi.discord_crawler.job.GuildJob;
-import de.turtleboi.discord_crawler.job.Job;
 import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Callable;
 
 @Command(name = "crawl")
+@SuppressWarnings({"unused", "MismatchedReadAndWriteOfArray"})
 public class CrawlCommand implements Callable<Integer> {
     @Option(names = {"-g", "--guild"}, description = "Snowflake ID of a guild to crawl", arity = "0..*")
     private long[] guilds;
@@ -31,16 +30,14 @@ public class CrawlCommand implements Callable<Integer> {
 
     @Override
     public @NotNull Integer call() throws Exception {
-        List<Job> jobs = new ArrayList<>();
+        Executor executor = new Executor(token);
 
         for (Long guild : this.guilds)
-            jobs.add(new GuildJob(guild));
+            executor.queueJob(new GuildJob(guild));
         for (Long channel : this.channels)
-            jobs.add(new ChannelJob(channel));
-        if (jobs.isEmpty())
-            jobs.add(new CompleteJob());
+            executor.queueJob(new ChannelJob(channel));
 
-        // TODO: execute jobs
+        Collector collector = executor.run();
 
         return 0;
     }
