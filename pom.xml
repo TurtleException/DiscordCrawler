@@ -98,6 +98,13 @@
 
 
     <dependencies>
+        <!-- CLI helper library -->
+        <dependency>
+            <groupId>info.picocli</groupId>
+            <artifactId>picocli</artifactId>
+            <version>4.7.6</version>
+        </dependency>
+
         <!-- JDA (Java Discord API) -->
         <dependency>
             <groupId>net.dv8tion</groupId>

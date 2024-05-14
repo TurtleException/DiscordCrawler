@@ -1,5 +1,7 @@
 package de.turtleboi.discord_crawler;
 
+import picocli.CommandLine;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -30,6 +32,7 @@ public class Main {
             throw new Error("Version may not be null. This application was not built properly.");
         System.out.printf(" version %s...%n", VERSION);
 
-        // TODO
+        int exitCode = new CommandLine(new CrawlCommand()).execute(args);
+        System.exit(exitCode);
     }
 }
