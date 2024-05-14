@@ -10,7 +10,7 @@ import picocli.CommandLine.Option;
 
 import java.util.concurrent.Callable;
 
-@Command(name = "crawl")
+@Command()
 @SuppressWarnings({"unused", "MismatchedReadAndWriteOfArray"})
 public class CrawlCommand implements Callable<Integer> {
     @Option(names = {"-g", "--guild"}, description = "Snowflake ID of a guild to crawl", arity = "0..*")
