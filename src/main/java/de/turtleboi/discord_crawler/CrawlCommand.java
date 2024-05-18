@@ -3,8 +3,11 @@ package de.turtleboi.discord_crawler;
 import de.turtleboi.discord_crawler.collection.Collector;
 import de.turtleboi.discord_crawler.executor.Executor;
 import de.turtleboi.discord_crawler.job.ChannelJob;
+import de.turtleboi.discord_crawler.job.CompleteJob;
+import de.turtleboi.discord_crawler.job.DataObjectJob;
 import de.turtleboi.discord_crawler.job.GuildJob;
 import de.turtleboi.discord_crawler.util.ConsoleUtil;
+import net.dv8tion.jda.api.requests.Route;
 import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -30,6 +33,9 @@ public class CrawlCommand implements Callable<Integer> {
     @Option(names = {"-f", "--file"}, description = "Output file")
     private File outputDir;
 
+    @Option(names = {"-a", "--all"}, description = "Index all", defaultValue = "false")
+    private boolean all;
+
     @Override
     public @NotNull Integer call() throws Exception {
         String token = ConsoleUtil.readPassword("Enter bot token");
@@ -40,10 +46,16 @@ public class CrawlCommand implements Callable<Integer> {
         Executor  executor  = new Executor(token);
         Collector collector = new Collector(outputDir);
 
-        for (Long guild : this.guilds)
-            executor.queueJob(new GuildJob(guild));
-        for (Long channel : this.channels)
-            executor.queueJob(new ChannelJob(channel));
+        executor.queueJob(new DataObjectJob("self", Route.Self.GET_SELF.compile()));
+
+        if (all) {
+            executor.queueJob(new CompleteJob());
+        } else {
+            for (Long guild : this.guilds)
+                executor.queueJob(new GuildJob(guild));
+            for (Long channel : this.channels)
+                executor.queueJob(new ChannelJob(channel));
+        }
 
         executor.run(collector);
 
