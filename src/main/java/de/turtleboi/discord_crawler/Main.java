@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.net.URISyntaxException;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
@@ -52,7 +53,7 @@ public class Main {
             File outDir = new File(parentDir, "out");
             outDir.mkdirs();
 
-            String timePrefix = DateTimeFormatter.ofPattern("uuuu-MM-dd").format(Instant.now());
+            String timePrefix = DateTimeFormatter.ofPattern("uuuu-MM-dd").format(Instant.now().atZone(ZoneId.of("UTC")));
 
             List<Integer> increments = Arrays.stream(outDir.listFiles())
                     .filter(file -> file.getName().startsWith(timePrefix))
