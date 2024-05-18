@@ -7,7 +7,9 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.Channel;
 import org.jetbrains.annotations.NotNull;
 
-public record GuildJob(long guild) implements Job {
+public record GuildJob(
+        long guild
+) implements Job {
     @Override
     public void execute(@NotNull JDA jda, @NotNull Executor executor, @NotNull Collector collector) {
         Guild guild = jda.getGuildById(this.guild);
@@ -16,8 +18,6 @@ public record GuildJob(long guild) implements Job {
             throw new NullPointerException("No such guild: " + this.guild);
 
         for (Channel channel : guild.getChannels())
-            executor.queueJob(new ChannelJob(channel.getIdLong()));
-
-        // TODO: metadata
+            executor.queueJob(new ChannelJob("guilds/" + guild + "/channels/" + channel.getId(), channel.getIdLong()));
     }
 }
