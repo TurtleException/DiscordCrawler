@@ -24,11 +24,9 @@ public class Executor {
         this.jobQueue.add(job);
     }
 
-    public @NotNull Collector run() throws InterruptedException {
+    public void run(@NotNull Collector collector) throws InterruptedException {
         if (this.jobQueue.isEmpty())
             this.jobQueue.add(new CompleteJob());
-
-        Collector collector = new Collector();
 
         JDA jda = JDABuilder.create(token, GatewayIntent.getIntents(GatewayIntent.DEFAULT))
                 .build();
@@ -38,7 +36,5 @@ public class Executor {
             Job job = this.jobQueue.poll();
             job.execute(jda, this, collector);
         }
-
-        return collector;
     }
 }

@@ -9,6 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
 
+import java.io.File;
 import java.util.concurrent.Callable;
 
 @Command()
@@ -26,18 +27,25 @@ public class CrawlCommand implements Callable<Integer> {
     @Option(names = {"-s", "--sparse"}, description = "Do not download media", defaultValue = "false")
     private boolean sparse;
 
+    @Option(names = {"-f", "--file"}, description = "Output file")
+    private File outputDir;
+
     @Override
     public @NotNull Integer call() throws Exception {
         String token = ConsoleUtil.readPassword("Enter bot token");
 
-        Executor executor = new Executor(token);
+        if (this.outputDir == null)
+            this.outputDir = Main.getDefaultOutputDir();
+
+        Executor  executor  = new Executor(token);
+        Collector collector = new Collector(outputDir);
 
         for (Long guild : this.guilds)
             executor.queueJob(new GuildJob(guild));
         for (Long channel : this.channels)
             executor.queueJob(new ChannelJob(channel));
 
-        Collector collector = executor.run();
+        executor.run(collector);
 
         return 0;
     }
