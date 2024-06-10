@@ -112,6 +112,13 @@
             <version>5.0.0-beta.24</version>
         </dependency>
 
+        <!-- JSON parser -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.10.1</version>
+        </dependency>
+
         <!-- Annotations (@NotNull and the like) -->
         <dependency>
             <groupId>org.jetbrains</groupId>
