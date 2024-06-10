@@ -30,6 +30,8 @@ public record ChannelJob(
         if (channel instanceof IThreadContainer threadContainer) {
             executor.queueJob(new DataObjectJob(collectorPath + "/threads", Route.Channels.LIST_PUBLIC_ARCHIVED_THREADS.compile(channelId)));
         }
+
+        executor.queueJob(new MessageJob(collectorPath, this.channel, 0));
     }
 
     public boolean isGuild() {

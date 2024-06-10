@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Collector {
-    private static final Gson GSON = new GsonBuilder()
+    public static final Gson GSON = new GsonBuilder()
             .setPrettyPrinting()
             .serializeNulls()
             .create();
